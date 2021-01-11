@@ -6,9 +6,9 @@ if(!defined("IN_MYBB"))
     die("Direct initialization of this file is not allowed.");
 }
 
-
-function myplugin_info()
+function consensus_info()
 {
+    $codename = str_replace('.php', '', basename(__FILE__));
     return array(
             "name"			=> "mybb-consensus",
             "description"	=> "A plugin for creating consensus polls",
@@ -17,32 +17,33 @@ function myplugin_info()
             "authorsite"	=> "https://www.diebasis-partei.de",
             "version"		=> "0.1-SNAPSHOT",
             "guid" 			=> "",
-            "codename"		=> "mybb-consensus",
+            "codename"		=> $codename,
             "compatibility" => "*" // TODO
     );
 }
 
-function myplugin_install()
+function consensus_install()
 {
 // TODO
 }
 
-function myplugin_is_installed()
+function consensus_is_installed()
+{
+    global $db;
+    return $db->table_exists("mybb_consensus_polls");
+}
+
+function consensus_uninstall()
 {
 // TODO
 }
 
-function myplugin_uninstall()
+function consensus_activate()
 {
 // TODO
 }
 
-function myplugin_activate()
-{
-// TODO
-}
-
-function myplugin_deactivate()
+function consensus_deactivate()
 {
 // TODO
 }
