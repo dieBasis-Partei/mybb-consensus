@@ -15,7 +15,10 @@ services:
       POSTGRES_DB: mybb
       POSTGRES_PASSWORD: changeme
       POSTGRES_USER: mybb
-    image: postgres:10.4
+    image: postgres:13.1
+    ports:
+      - published: 5432
+        target: 5432
     volumes:
-      - ${PWD}/postgres/data:/var/lib/postgresql/data:rw
+      - ${PWD}/postgres:/var/lib/postgresql/data:rw
 version: '3.6'
