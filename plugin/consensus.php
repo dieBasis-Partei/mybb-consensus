@@ -6,6 +6,41 @@ if(!defined("IN_MYBB"))
     die("Direct initialization of this file is not allowed.");
 }
 
+// cache templates - this is important when it comes to performance
+// THIS_SCRIPT is defined by some of the MyBB scripts, including index.php
+if(defined('THIS_SCRIPT'))
+{
+    global $templatelist;
+
+    if(isset($templatelist))
+    {
+        $templatelist .= ',';
+    }
+
+    if(THIS_SCRIPT== 'showthread.php')
+    {
+        $templatelist .= 'consensus_showthread';
+    }
+}
+
+if (defined('IN_ADMINCP'))
+{
+    // Add our hello_settings() function to the setting management module to load language strings.
+    // TODO: Add hooks for settings here
+    // We could hook at 'admin_config_settings_begin' only for simplicity sake.
+}
+else
+{
+    // Add our hello_index() function to the index_start hook so when that hook is run our function is executed
+    $plugins->add_hook('showthread_start', 'consensus_showthread');
+
+    // Add our hello_post() function to the postbit hook so it gets executed on every post
+    //$plugins->add_hook('postbit', 'hello_post');
+
+    // Add our hello_new() function to the misc_start hook so our misc.php?action=hello inserts a new message into the created DB table.
+    //$plugins->add_hook('misc_start', 'hello_new');
+}
+
 const TWO_WEEKS = 14 * 24 * 60 * 60;
 const DATE_FORMAT = 'd.m.Y H:i:s';
 
@@ -25,195 +60,73 @@ function consensus_info()
     );
 }
 
-function consensus_install()
-{
-    create_tables();
+function consensus_install() {
+    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
+
+    global $db;
+    $database_setup = new ConsensusDB($db, $db->type);
+    $database_setup->install();
+
+    require_once MYBB_ROOT.'inc/plugins/consensus.templates.php';
+    $template_setup = new ConsensusTemplateSetup($db);
+    $template_setup->install();
 }
 
-function create_tables()
-{
+function consensus_is_installed() {
+    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
+
+    global $db;
+    $database_setup = new ConsensusDB($db, $db->type);
+    return $database_setup->check_tables_exists(true);
+}
+
+function consensus_uninstall() {
+    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
+
     global $db;
 
-    if ($db->table_exists("consensus_polls")) {
-        return;
-    }
+    $template_setup = new ConsensusTemplateSetup($db);
+    $template_setup->uninstall();
 
-    // Create consensus_status table
-    $db->write_query("CREATE TABLE ".TABLE_PREFIX."consensus_status (
-        status_id serial,
-        status varchar(40) NOT NULL,
-        PRIMARY KEY(status_id)
-    );");
-
-    // Create consensus_polls table
-    $db->write_query("CREATE TABLE ".TABLE_PREFIX."consensus_polls (
-        poll_id serial,
-        title varchar(255) NOT NULL,
-        description text,
-        expires timestamp NOT NULL,
-        created_at timestamp NOT NULL default NOW(),
-        created_by_user_id INTEGER NOT NULL,
-        thread_id INTEGER NOT NULL,
-        status serial,
-        PRIMARY KEY (poll_id),
-        CONSTRAINT fk_user_id
-            FOREIGN KEY (created_by_user_id)
-            REFERENCES ".TABLE_PREFIX."users(uid),
-        CONSTRAINT fk_status
-            FOREIGN KEY (status)
-            REFERENCES ".TABLE_PREFIX."consensus_status(status_id),
-        CONSTRAINT fk_thread
-            FOREIGN KEY(thread_id)
-            REFERENCES ".TABLE_PREFIX."threads(tid)
-    );");
-
-    // Create consensus_choices table
-    $db->write_query("CREATE TABLE ".TABLE_PREFIX."consensus_choices (
-        choice_id serial,
-        poll_id serial,
-        choice varchar(255) NOT NULL,
-        PRIMARY KEY(choice_id),
-        CONSTRAINT fk_poll_id
-            FOREIGN KEY(poll_id)
-            REFERENCES ".TABLE_PREFIX."consensus_polls(poll_id)
-    );");
-
-    // Create consensus votes table
-    $db->write_query("CREATE TABLE ".TABLE_PREFIX."consensus_votes (
-        vote_id serial,
-        choice_id serial,
-        vote_by_user_id integer,
-        consensus_points smallint,
-        PRIMARY KEY(vote_id),
-        CONSTRAINT fk_choice
-            FOREIGN KEY(choice_id)
-            REFERENCES ".TABLE_PREFIX."consensus_choices(choice_id),
-        CONSTRAINT fk_user_id
-            FOREIGN KEY(vote_by_user_id)
-            REFERENCES ".TABLE_PREFIX."users(uid)        
-    );");
+    $database_setup = new ConsensusDB($db, $db->type);
+    $database_setup->uninstall();
 }
 
-function consensus_is_installed()
-{
+function consensus_activate() {
+    require_once MYBB_ROOT.'inc/plugins/consensus.templates.php';
+
     global $db;
-    return $db->table_exists("consensus_polls") &&
-            $db->table_exists("consensus_choices") &&
-            $db->table_exists("consensus_status") &&
-            $db->table_exists("consensus_votes");
+    $template_setup = new ConsensusTemplateSetup($db);
+    $template_setup->activate_templates();
 }
 
-function consensus_uninstall()
-{
+function consensus_deactivate() {
+    require_once MYBB_ROOT.'inc/plugins/consensus.templates.php';
+
     global $db;
-    $db->drop_table("consensus_votes");
-    $db->drop_table("consensus_choices");
-    $db->drop_table("consensus_polls");
-    $db->drop_table("consensus_status");
-}
-
-function consensus_activate()
-{
-    insert_db_data();
-    activate_templates();
-}
-
-function insert_db_data()
-{
-    global $db;
-
-    $db->insert_query('consensus_status', array('status' => 'active'));
-    $db->insert_query('consensus_status', array('status' => 'closed'));
-    $db->insert_query('consensus_status', array('status' => 'inactive'));
-    $db->insert_query('consensus_status', array('status' => 'expired'));
-}
-
-function activate_templates()
-{
-    require_once MYBB_ROOT.'inc/adminfunctions_templates.php';
-
-    find_replace_templatesets('showthread', '#'.preg_quote('{$addremovesubscription}').'#', "{\$addremovesubscription}\nConsensus");
-    find_replace_templatesets('showthread', '#'.preg_quote('{$newreply}').'#', "Create Consensus{\$newreply}");
-    find_replace_templatesets('showthread', '#'.preg_quote('{$pollbox}').'#', "{\$pollbox}\n{\$consensus_box}");
-
-    global $lang, $db;
-    $lang->load('consensus');
-
-    $templatearray = array(
-            'showthread' => '<table border="0" cellspacing="{$theme[\'borderwidth\']}" cellpadding="{$theme[\'tablespace\']}" class="tborder">
-	<thead>
-		<tr>
-			<td class="thead">
-				<strong>{$lang->consensus}</strong>
-			</td>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td class="tcat">
-				<form method="POST" action="misc.php">
-					<input type="hidden" name="consensus_post_key" value="{$mybb->post_code}" />
-					<input type="hidden" name="action" value="create_consensus" />
-					Hier w&uuml;rden die Abstimmungsm&ouml;glichkeiten stehen.
-					<input type="text" name="message" class="textbox" /> <input type="submit" name="submit" class="button" value="{$lang->consensus_submit}" />
-				</form>
-			</td>
-		</tr>
-		<tr>
-			<td class="trow1">
-				Hier k&ouml;nnte Ihre Konsensierung stehen.
-			</td>
-		</tr>
-	</tbody>
-</table>
-<br />',
-        'post' => '<br /><br /><strong>{$lang->consensus_submit_done}</strong>'
-    );
-
-    $group = array(
-        'prefix' => $db->escape_string('consensus'),
-        'title' => $db->escape_string('MyBB Consensus')
-    );
-
-    // Update or create template group:
-    $query = $db->simple_select('templategroups', 'prefix', "prefix='{$group['prefix']}'");
-
-    if($db->fetch_field($query, 'prefix'))
-    {
-        $db->update_query('templategroups', $group, "prefix='{$group['prefix']}'");
-    }
-    else
-    {
-        $db->insert_query('templategroups', $group);
-    }
-}
-
-function consensus_deactivate()
-{
-    deactivate_templates();
-}
-
-function deactivate_templates()
-{
-    require_once MYBB_ROOT.'inc/adminfunctions_templates.php';
-
-    find_replace_templatesets('showthread', '#'.preg_quote('Create Consensus').'#', '');
-    find_replace_templatesets('showthread', '#'.preg_quote('Consensus').'#', '');
-    find_replace_templatesets('showthread', '#'.preg_quote('\n{$consensus_box}').'#', '');
+    $template_setup = new ConsensusTemplateSetup($db);
+    $template_setup->deactivate_templates();
 }
 
 // Display the consensus poll in thread
-function consensus_showthread()
-{
-    global $templates, $lang, $consensus_box;
-    $lang->load('consensus');
+function consensus_showthread() {
+    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
 
-    $consensus_box = eval($templates->render('consensus_showthread'));
+    global $db, $mybb, $consensusbox;
+    $consensus_db = new ConsensusDB($db, $db->type);
+    $thread_id = $mybb->input['tid'];
+    if (!$consensus_db->consensus_active($thread_id)) {
+        $consensusbox = '';
+        return;
+    } else {
+        global $templates, $lang;
+        $lang->load('consensus');
+        $consensusbox = eval($templates->render('consensus_showthread'));
+    }
 }
 
 // Create a new consensus poll
-function consensus_new()
-{
+function consensus_new() {
     global $mybb;
 
     if ($mybb->get_input('action') != 'create_consensus') {
