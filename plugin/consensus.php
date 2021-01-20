@@ -61,19 +61,19 @@ function consensus_info()
 }
 
 function consensus_install() {
-    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
+    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
 
     global $db;
     $database_setup = new ConsensusDB($db, $db->type);
     $database_setup->install();
 
-    require_once MYBB_ROOT.'inc/plugins/consensus.templates.php';
+    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.templates.php';
     $template_setup = new ConsensusTemplateSetup($db);
     $template_setup->install();
 }
 
 function consensus_is_installed() {
-    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
+    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
 
     global $db;
     $database_setup = new ConsensusDB($db, $db->type);
@@ -81,7 +81,7 @@ function consensus_is_installed() {
 }
 
 function consensus_uninstall() {
-    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
+    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
 
     global $db;
 
@@ -93,7 +93,7 @@ function consensus_uninstall() {
 }
 
 function consensus_activate() {
-    require_once MYBB_ROOT.'inc/plugins/consensus.templates.php';
+    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.templates.php';
 
     global $db;
     $template_setup = new ConsensusTemplateSetup($db);
@@ -101,7 +101,7 @@ function consensus_activate() {
 }
 
 function consensus_deactivate() {
-    require_once MYBB_ROOT.'inc/plugins/consensus.templates.php';
+    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.templates.php';
 
     global $db;
     $template_setup = new ConsensusTemplateSetup($db);
@@ -110,7 +110,7 @@ function consensus_deactivate() {
 
 // Display the consensus poll in thread
 function consensus_showthread() {
-    require_once MYBB_ROOT.'inc/plugins/consensus.database.php';
+    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
 
     global $db, $mybb, $consensusbox;
     $consensus_db = new ConsensusDB($db, $db->type);
