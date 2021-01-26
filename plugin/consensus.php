@@ -44,6 +44,9 @@ else
 const TWO_WEEKS = 14 * 24 * 60 * 60;
 const DATE_FORMAT = 'd.m.Y H:i:s';
 
+$consensusDbTables = null;
+$consensusTemplates = null;
+
 function consensus_info()
 {
     $codename = str_replace('.php', '', basename(__FILE__));
@@ -53,75 +56,68 @@ function consensus_info()
             "website"		=> "https://github.com/dieBasis-Partei/mybb-consensus",
             "author"		=> "dieBasis",
             "authorsite"	=> "https://www.diebasis-partei.de",
-            "version"		=> "0.1-SNAPSHOT",
-            "guid" 			=> "",
+            "version"		=> "0.1-SNAPSHOT-".date("d.m.Y-H:i:s", time()),
+            "guid" 			=> time(),
             "codename"		=> $codename,
             "compatibility" => "*" // TODO
     );
 }
 
+function __init()
+{
+    global $db, $consensusDbTables, $consensusTemplates;
+    require_once MYBB_ROOT . 'inc/plugins/consensus/class_consensus_database.php';
+    $consensusDbTables = new ConsensusDbTables($db, $db->type);
+
+    require_once MYBB_ROOT . 'inc/plugins/consensus/class_consensus_templates.php';
+    $consensusTemplates = new ConsensusTemplates($db);
+}
+
 function consensus_install() {
-    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
-
-    global $db;
-    $database_setup = new ConsensusDB($db, $db->type);
-    $database_setup->install();
-
-    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.templates.php';
-    $template_setup = new ConsensusTemplateSetup($db);
-    $template_setup->install();
+    __init();
+    global $consensusTemplates, $consensusDbTables;
+    $consensusDbTables->install();
+    $consensusTemplates->install();
 }
 
 function consensus_is_installed() {
-    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
-
-    global $db;
-    $database_setup = new ConsensusDB($db, $db->type);
-    return $database_setup->check_tables_exists(true);
+    __init();
+    global $consensusDbTables;
+    return null != $consensusDbTables && $consensusDbTables->check_tables_exists(true);
 }
 
 function consensus_uninstall() {
-    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
-
-    global $db;
-
-    $template_setup = new ConsensusTemplateSetup($db);
-    $template_setup->uninstall();
-
-    $database_setup = new ConsensusDB($db, $db->type);
-    $database_setup->uninstall();
+    __init();
+    global $consensusDbTables, $consensusTemplates;
+    $consensusTemplates->uninstall();
+    $consensusDbTables->uninstall();
 }
 
 function consensus_activate() {
-    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.templates.php';
-
-    global $db;
-    $template_setup = new ConsensusTemplateSetup($db);
-    $template_setup->activate_templates();
+    __init();
+    global $consensusTemplates;
+    $consensusTemplates->activate_templates();
 }
 
 function consensus_deactivate() {
-    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.templates.php';
-
-    global $db;
-    $template_setup = new ConsensusTemplateSetup($db);
-    $template_setup->deactivate_templates();
+    __init();
+    global $consensusTemplates;
+    $consensusTemplates->deactivate_templates();
 }
 
 // Display the consensus poll in thread
 function consensus_showthread() {
-    require_once MYBB_ROOT.'inc/plugins/consensus/consensus.database.php';
-
-    global $db, $mybb, $consensusbox;
-    $consensus_db = new ConsensusDB($db, $db->type);
+    __init();
+    global $consensusDbTables, $mybb, $consensusbox, $newconsensus;
     $thread_id = $mybb->input['tid'];
-    if (!$consensus_db->consensus_active($thread_id)) {
+    if (!$consensusDbTables->consensus_active($thread_id)) {
         $consensusbox = '';
-        return;
+        $newconsensus = '<a href="new_consensus.php?action=new_consensus&tid='.$thread_id.'">neue Konsensierung</a>';
     } else {
         global $templates, $lang;
         $lang->load('consensus');
         $consensusbox = eval($templates->render('consensus_showthread'));
+        $newconsensus = '';
     }
 }
 

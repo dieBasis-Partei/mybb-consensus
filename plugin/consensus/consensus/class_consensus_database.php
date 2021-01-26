@@ -1,6 +1,6 @@
 <?php
 
-class ConsensusDB {
+class ConsensusDbTables {
 
     private $db;
     private $databaseType;
@@ -167,8 +167,11 @@ class ConsensusDB {
         $query = $this->db->simple_select($this->consensus, 'status', "thread_id='{$thread_id}'", array("limit" => 1));
         $status_id = $this->db->fetch_field($query, 'status');
 
-        $status_row = $this->find_status(null, $status_id);
-        return $status_row ? $status_row['status'] == 'active' : false;
+        if($status_id) {
+            $status_row = $this->find_status(null, $status_id);
+            return $status_row ? $status_row['status'] == 'active' : false;
+        }
+        return false;
     }
 
     private function find_status($status, $status_id) {

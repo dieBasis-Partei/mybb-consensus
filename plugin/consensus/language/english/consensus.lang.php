@@ -18,3 +18,12 @@ $l['consensus_error_no_choices'] = 'Error! No choices given.';
 $l['consensus_choice_not_valid'] = 'Error! The given text for a choice is empty or longer than 255 characters.';
 $l['consensus_title_not_valid'] = 'Fehler! The given title is empty or longer than 255 characters.';
 $l['consensus_error_consensus_creation'] = 'Error! Could not create consensus poll. If this error happens again, please contact your administrator.';
+
+$l['consensus_title'] = 'Title';
+$l['consensus_description'] = 'Description';
+$l['consensus_expires'] = 'Expires at';
+$l['consensus_start'] = 'Start consensus';
+
+$l['consensus_proposal_title'] = 'Title';
+$l['consensus_proposal_description'] = 'Description';
+$l['consensus_proposal_add'] = 'Add proposals';

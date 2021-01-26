@@ -1,3 +1,4 @@
 out/
 docker/mybb
 docker/postgres
+.DS_Store
