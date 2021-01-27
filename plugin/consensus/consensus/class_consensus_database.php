@@ -8,7 +8,7 @@ class ConsensusDbTables {
     // Table names
     private $consensus = "consensus";
     private $status = "consensus_status";
-    private $questions = "consensus_questions";
+    private $proposals = "consensus_proposals";
     private $choices = "consensus_choices";
     private $votes = "consensus_votes";
 
@@ -19,7 +19,7 @@ class ConsensusDbTables {
         $this->databaseType = $databaseType;
 
         $this->tables = array($this->consensus, $this->status,
-                $this->questions, $this->choices, $this->votes);
+                $this->proposals, $this->choices, $this->votes);
     }
 
     public function check_tables_exists($require_all) {
@@ -60,6 +60,7 @@ class ConsensusDbTables {
         }
 
         $this->insert_default_data();
+        $this->insert_icons();
     }
 
     private function create_postgres_tables()
@@ -93,13 +94,14 @@ class ConsensusDbTables {
                 REFERENCES ".TABLE_PREFIX."threads(tid)
         );");
 
-        // Create question table
-        $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->questions." (
-            question_id serial,
+        // Create proposal table
+        $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->proposals." (
+            proposal_id serial,
             title varchar(255) NOT NULL,
             description text,
+            position INTEGER,
             consensus_id serial,
-            PRIMARY KEY (question_id),
+            PRIMARY KEY (proposal_id),
             CONSTRAINT fk_consensus
                 FOREIGN KEY (consensus_id)
                 REFERENCES ".TABLE_PREFIX.$this->consensus."(consensus_id)
@@ -108,12 +110,12 @@ class ConsensusDbTables {
         // Create choices table
         $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->choices." (
             choice_id serial,
-            question_id serial,
+            proposal_id serial,
             points smallint,
             PRIMARY KEY(choice_id),
-            CONSTRAINT fk_question
-                FOREIGN KEY(question_id)
-                REFERENCES ".TABLE_PREFIX.$this->questions."(question_id)
+            CONSTRAINT fk_proposal
+                FOREIGN KEY(proposal_id)
+                REFERENCES ".TABLE_PREFIX.$this->proposals."(proposal_id)
         );");
 
         // Create votes table
@@ -149,6 +151,10 @@ class ConsensusDbTables {
         $this->db->insert_query($this->status, array('status' => 'expired'));
     }
 
+    private function insert_icons() {
+        $this->db->insert_query('icons', array('name' => 'Consensus', 'path' => 'images/icons/consensus.png'));
+    }
+
     public function uninstall() {
         if (!$this->check_tables_exists(false)) {
             return;
@@ -156,10 +162,11 @@ class ConsensusDbTables {
 
         $this->db->drop_table('consensus_votes');
         $this->db->drop_table('consensus_choices');
-        $this->db->drop_table('consensus_questions');
+        $this->db->drop_table('consensus_proposal');
         $this->db->drop_table('consensus');
         $this->db->drop_table('consensus_status');
 
+        $this->db->delete_query('icons', "name LIKE '%Consensus%'");
     }
 
     public function consensus_active($thread_id)

@@ -11,3 +11,8 @@ License: MIT
 ## Description
 
 This plugin allows to create, edit and analyse consensus polls.
+
+
+## 3rd parties
+
+* [Icons by Aleksandr Reva](https://www.iconfinder.com/Revicon)

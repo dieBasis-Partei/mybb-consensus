@@ -9,20 +9,20 @@ class Consensus
     private $user_id;
     private $thread_id;
     private $status_id;
-    private $suggestions;
+    private $proposals;
 
-    public function __construct($title, $description, DateTime $expires, $user_id, $thread_id, $status_id, $suggestions) {
+    public function __construct($title, $description, DateTime $expires, $user_id, $thread_id, $status_id, $proposals) {
         $this->title = $title;
         $this->description = $description;
         $this->expires = $expires;
-        $this->suggestions = $suggestions;
         $this->user_id = $user_id;
         $this->thread_id = $thread_id;
         $this->status_id = $status_id;
+        $this->proposals = $proposals;
     }
 
-    public function add_suggestion(Suggestion $suggestion) {
-        $this->suggestions[] = $suggestion;
+    public function add_proposal(Proposal $proposal) {
+        $this->proposals[] = $proposal;
     }
 
     /**
@@ -76,9 +76,9 @@ class Consensus
     /**
      * @return Array
      */
-    public function getSuggestions()
+    public function getProposals()
     {
-        return $this->suggestions;
+        return $this->proposals;
     }
 
     public function toDBArray() {

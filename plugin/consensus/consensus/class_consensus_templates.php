@@ -21,56 +21,69 @@ class ConsensusTemplates
 
     private function install_templates() {
         $templates_array = array(
-                'showthread' =>
+                'display_form_consensus' =>
                         '<form method="POST" action="misc.php">
                             <table border="0" cellspacing="0" cellpadding="5" class="tborder">
 		                        <thead>
 			                        <tr>
 				                        <td class="thead" colspan="2">
-					                        <strong>{$lang->consensus}: {$consensus_title}</strong>
+					                        <strong>{$lang->consensus}: {$consensus->getTitle()}</strong>
 				                        </td>
 			                        </tr>
 			                    </thead>
 			                    <tbody>
-			                        {$questions}
+                                    <tr>
+				                        <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
+				                            {$consensus->getDescription()}
+				                        </td>
+                                    </tr>
+			                        {$proposals}
+                                    <tr>
+				                        <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
+				                            <input type="submit" name="submit" class="button" value="{$lang->consensus_submit}" />
+				                        </td>
+                                    </tr>
 			                    </tbody>
 			                </table>
+			                {$lang->consensus_resistance_points_scala}
 			            </form>',
-                'questions' =>
+                'display_form_proposal' =>
                         '
                         <tr>
-				            <td class="trow1" style="text-align: left; vertical-align: top;">
-					            <strong>{$lang->consensus_question} {$consensus_question_number} - ${consensus_question_title}</strong>
+				            <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
+					            <strong>{$lang->consensus_question} {$proposal->getPosition()} - {$proposal->getTitle()}</strong>
 				            </td>
-				            <td class="trow1" style="text-align: justify;">
-					            {$consensus_question_description}
+				        </tr>
+				        <tr>
+				            <td class="trow1" style="text-align: justify;" colspan="2">
+					            {$proposal->getDescription()}
 				            </td>
 			            </tr>
 			            <tr>
 				            <td class="trow1" style="text-align: left;" colspan="2">
-					            <strong style="margin-right: 2em;">{$lang->consensus_points_title}</strong>
+					            <strong style="margin-right: 2em;">{$lang->consensus_proposal_caption_points}</strong>
                                 {$points_metric}
 				            </td>
 			            </tr>',
-                'points' =>
-                '<input type="radio" class="radio" name="{$question_id}" id="{$question_id}_{$option_number}" value="{$option_number}" /><label for="{$question_id}_{$option_number}">{$option_number_label}</label>',
-                'form' => '
+                'display_form_proposal_points' =>
+                '<input type="radio" class="radio" name="{$proposal->getId()}" id="{$proposal->getId()}_{$resistance_points}" value="{$resistance_points}" /><label for="{$proposal->getId()}_{$resistance_points}">{$resistance_points_label}</label>',
+                'create_form' => '
                     <script language="JavaScript">
                         function addPoints() {
-                            let number_suggestions = document.getElementById("number_points").value;
+                            let number_of_proposals = document.getElementById("number_points").value;
                             
-                            if (number_suggestions < 1) {
-                                number_suggestions = 1;
+                            if (number_of_proposals < 1) {
+                                number_of_proposals = 1;
                             }
                             let url = new URL(document.URL);
-                            url.searchParams.set(\'suggestions\', number_suggestions);
+                            url.searchParams.set(\'proposals\', number_of_proposals);
                             document.location.href =  url.toString();
                         }
                     </script>
                     <form method="POST" action="new_consensus.php">
                         <input type="hidden" name="consensus_post_code" value="{$mybb->post_code}" />
 					    <input type="hidden" name="action" value="create" />
-					    <input type="hidden" name="suggestions" value="{$suggestions}">
+					    <input type="hidden" name="proposals" value="{$proposals}">
 					    <input type="hidden" name="tid" value="{$tid}">
                         <table border="0" cellspacing="0" cellpadding="5" class="tborder">
                             <thead>
@@ -96,13 +109,13 @@ class ConsensusTemplates
                                 <tr>
                                     <td class="trow1" style="text-align: justify; padding-right: 1em;" colspan="2">
                                         <label for="number_points">{$lang->consensus_proposal_caption_add}:</label><br />
-                                        <input type="number" id="number_points" value="{$suggestions}" min="1" max="10" />
+                                        <input type="number" id="number_points" value="{$proposals}" min="1" max="10" />
                                         <input type="button" onclick="addPoints()" value="{$lang->consensus_proposal_add}" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="trow1" style="text-align: left;" colspan="2" style="padding-right: 1em;">
-                                        {$consensus_form_points}
+                                        {$consensus_create_form_proposals}
                                     </td>
                                 </tr>
                                 <tr>
@@ -120,18 +133,18 @@ class ConsensusTemplates
                         </table>
                     </form>
                 ',
-                'form_points' => '
+                'create_form_proposal' => '
                     <table id="consensus_point_{$consensus_point_index}" border="0" cellpadding="5" cellspacing="0" class="tborder" style="width: 100%;">
                         <tr>
                             <td class="trow_selected" style="text-align: left; vertical-align: top; padding-right: 1em;" colspan="2">
-                                <label for="consensus_suggestion_title_{$consensus_point_index}"><strong>{$lang->consensus_proposal_title} {$consensus_point_index}:</strong></label><br />
-                                <input name="consensus_suggestion_title_{$consensus_point_index}" id="consensus_suggestion_title_{$consensus_point_index}" type="text" maxlength="255" style="width: 100%;" />
+                                <label for="consensus_proposal_title_{$consensus_point_index}"><strong>{$lang->consensus_proposal_title} {$consensus_point_index}:</strong></label><br />
+                                <input name="consensus_proposal_title_{$consensus_point_index}" id="consensus_proposal_title_{$consensus_point_index}" type="text" maxlength="255" style="width: 100%;" />
                             </td>
                         </tr>
                         <tr>
                             <td class="trow_selected" style="text-align: justify; padding-right: 1em;" colspan="2">
-                                <label for="consensus_suggestion_description_{$consensus_point_index}">{$lang->consensus_proposal_description}:</label><br />
-                                <textarea style="width: 100%; height: 5em;"  id="consensus_suggestion_description_{$consensus_point_index}" name="consensus_suggestion_description_{$consensus_point_index}""></textarea>
+                                <label for="consensus_proposal_description_{$consensus_point_index}">{$lang->consensus_proposal_description}:</label><br />
+                                <textarea style="width: 100%; height: 5em;"  id="consensus_proposal_description_{$consensus_point_index}" name="consensus_proposal_description_{$consensus_point_index}""></textarea>
                             </td>
                         </tr>
                     </table>',

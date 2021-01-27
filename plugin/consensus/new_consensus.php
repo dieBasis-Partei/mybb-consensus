@@ -1,11 +1,13 @@
 <?php
-
     // Set some useful constants that the core may require or use
     define("IN_MYBB", 1);
     define('THIS_SCRIPT', 'new_consensus.php');
 
     // Including global.php gives us access to a bunch of MyBB functions and variables
     require_once "./global.php";
+
+    require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_consensus.php');
+    require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_proposal.php');
 
     // Only required because we're using misc_help for our page wrapper
     $lang->load("consensus");
@@ -21,16 +23,13 @@
             error_no_permission();
         }
 
-        require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_consensus.php');
-        require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_suggestion.php');
-
-        $suggestions = $mybb->get_input('suggestions');
+        $proposals = $mybb->get_input('proposals');
 
         $sugs = array();
-        for($i = 1; $i <= $suggestions; $i++) {
-            $sug_title = $mybb->get_input('consensus_suggestion_title_'.$i);
-            $sug_description = $mybb->get_input('consensus_suggestion_description_'.$i);
-            $sugs[] = new Suggestion($sug_title, $sug_description, 0);
+        for($i = 1; $i <= $proposals; $i++) {
+            $sug_title = $mybb->get_input('consensus_proposal_title_'.$i);
+            $sug_description = $mybb->get_input('consensus_proposal_description_'.$i);
+            $sugs[] = new Proposal($sug_title, $sug_description, $i, 0);
         }
 
         global $db;
@@ -52,7 +51,7 @@
 
         $dao = new ConsensusDao($db);
         if ($dao->insert($consensus) === true) {
-            redirect('index.php', $lang->consensus_created);
+            redirect("showthread.php?tid={$thread_id}", $lang->consensus_created);
         } else {
             error($lang->consensus_error_create);
         }
@@ -85,18 +84,18 @@
 
         $plugins->run_hooks("consensus_create_end");
 
-        $suggestions = $mybb->input['suggestions'] ? $mybb->input['suggestions'] : 1;
+        $proposals = $mybb->input['proposals'] ? $mybb->input['proposals'] : 1;
 
         $consensus_point_index = 1;
-        for (; $consensus_point_index < $suggestions + 1; $consensus_point_index++) {
-            eval("\$consensus_form_points .= \"" . $templates->get('consensus_form_points') . '";');
+        for (; $consensus_point_index < $proposals + 1; $consensus_point_index++) {
+            eval("\$consensus_create_form_proposals .= \"" . $templates->get('consensus_create_form_proposal') . '";');
         }
 
         $date = new DateTime();
         $date->add(new DateInterval('P14D'));
         $consensus_default_expiry = $date->format($date_format);
         $tid = $thread['tid'];
-        eval('$sections  = "' . $templates->get('consensus_form') . '";');
+        eval('$sections  = "' . $templates->get('consensus_create_form') . '";');
 
         // Using the misc_help template for the page wrapper
         eval('$page = "' . $templates->get("misc_help") . '";');
