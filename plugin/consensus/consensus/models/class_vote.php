@@ -2,20 +2,40 @@
 
 class Vote {
 
-    private $choice_id;
+    private $vote_id;
+    private $proposal_id;
     private $user_id;
+    private $points;
 
-    public function __construct($choice_id, $user_id) {
-        $this->choice_id = $choice_id;
+    public function __construct($proposal_id, $user_id, $points, $vote_id = 0) {
+        $this->proposal_id = $proposal_id;
         $this->user_id = $user_id;
+        $this->points = $points;
+        $this->vote_id = $vote_id;
+    }
+
+    /**
+     * @return int|mixed
+     */
+    public function getVoteId()
+    {
+        return $this->vote_id;
     }
 
     /**
      * @return mixed
      */
-    public function getChoiceId()
+    public function getProposalId()
     {
-        return $this->choice_id;
+        return $this->proposal_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPoints()
+    {
+        return $this->points;
     }
 
     /**
@@ -27,8 +47,9 @@ class Vote {
     }
 
     public function toDBArray() {
-        return array('choice_id' => $this->choice_id,
-            'user_id' => $this->user_id
+        return array('proposal_id' => $this->proposal_id,
+            'user_id' => $this->user_id,
+            'points' => $this->points
         );
     }
 

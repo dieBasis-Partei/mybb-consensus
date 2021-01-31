@@ -1,6 +1,6 @@
 <?php
-require_once(MYBB_ROOT.'inc/plugins/consensus/models/class_proposal.php');
-require_once(MYBB_ROOT.'inc/plugins/consensus/models/class_consensus.php');
+require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_proposal.php');
+require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_consensus.php');
 
 class ConsensusDao
 {
@@ -49,7 +49,11 @@ class ConsensusDao
             $proposals[] = new Proposal($result['title'], $result['description'], $result['position'], $result['consensus_id'], $result['proposal_id']);
         }
 
-        return new Consensus($title, $description, $expires, $creator_id, $cthread_id, $status_id, $proposals);
+        return new Consensus($title, $description, $expires, $creator_id, $cthread_id, $status_id, $proposals, $consensus_id);
+    }
+
+    public function update_status($consensus_id, $status_id) {
+        $this->db->update_query('consensus', ["status" => $status_id], "consensus_id='{$consensus_id}'");
     }
 
     public function has_thread_consensus($thread_id) {

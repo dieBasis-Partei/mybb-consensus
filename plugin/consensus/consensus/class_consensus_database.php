@@ -9,7 +9,6 @@ class ConsensusDbTables {
     private $consensus = "consensus";
     private $status = "consensus_status";
     private $proposals = "consensus_proposals";
-    private $choices = "consensus_choices";
     private $votes = "consensus_votes";
 
     private $tables;
@@ -19,7 +18,7 @@ class ConsensusDbTables {
         $this->databaseType = $databaseType;
 
         $this->tables = array($this->consensus, $this->status,
-                $this->proposals, $this->choices, $this->votes);
+                $this->proposals, $this->votes);
     }
 
     public function check_tables_exists($require_all) {
@@ -107,26 +106,16 @@ class ConsensusDbTables {
                 REFERENCES ".TABLE_PREFIX.$this->consensus."(consensus_id)
         );");
 
-        // Create choices table
-        $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->choices." (
-            choice_id serial,
-            proposal_id serial,
-            points smallint,
-            PRIMARY KEY(choice_id),
-            CONSTRAINT fk_proposal
-                FOREIGN KEY(proposal_id)
-                REFERENCES ".TABLE_PREFIX.$this->proposals."(proposal_id)
-        );");
-
         // Create votes table
         $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->votes." (
             vote_id serial,
-            choice_id serial,
-            user_id integer,
+            proposal_id serial,
+            user_id INTEGER,
+            points smallint,
             PRIMARY KEY(vote_id),
-            CONSTRAINT fk_choice
-                FOREIGN KEY(choice_id)
-                REFERENCES ".TABLE_PREFIX."consensus_choices(choice_id),
+            CONSTRAINT fk_proposal
+                FOREIGN KEY(proposal_id)
+                REFERENCES ".TABLE_PREFIX.$this->proposals."(proposal_id),
             CONSTRAINT fk_user_id
                 FOREIGN KEY(user_id)
                 REFERENCES ".TABLE_PREFIX."users(uid)        
@@ -160,11 +149,10 @@ class ConsensusDbTables {
             return;
         }
 
-        $this->db->drop_table('consensus_votes');
-        $this->db->drop_table('consensus_choices');
-        $this->db->drop_table('consensus_proposal');
-        $this->db->drop_table('consensus');
-        $this->db->drop_table('consensus_status');
+        $this->db->drop_table($this->votes, true);
+        $this->db->drop_table($this->proposals, true);
+        $this->db->drop_table($this->consensus, true);
+        $this->db->drop_table($this->status, true);
 
         $this->db->delete_query('icons', "name LIKE '%Consensus%'");
     }

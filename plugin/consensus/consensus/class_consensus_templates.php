@@ -23,11 +23,16 @@ class ConsensusTemplates
         $templates_array = array(
                 'display_form_consensus' =>
                         '<form method="POST" action="misc.php">
+                            <input type="hidden" name="action" value="consensus_vote" />
+                            <input type="hidden" name="consensus_post_code" value="{$mybb->post_code}" />
+                            <input type="hidden" name="thread_id" value="{$consensus->getThreadId()}" />
+                            <input type="hidden" name="consensus_id" value="{$consensus->getConsensusId()}">
+                            <input type="hidden" name="consensus_proposals_size" value="{$number_of_proposals}">
                             <table border="0" cellspacing="0" cellpadding="5" class="tborder">
 		                        <thead>
 			                        <tr>
 				                        <td class="thead" colspan="2">
-					                        <strong>{$lang->consensus}: {$consensus->getTitle()}</strong>
+					                        <strong>{$lang->consensus}: {$consensus->getTitle()} {$expiry}</strong>
 				                        </td>
 			                        </tr>
 			                    </thead>
@@ -40,16 +45,22 @@ class ConsensusTemplates
 			                        {$proposals}
                                     <tr>
 				                        <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
-				                            <input type="submit" name="submit" class="button" value="{$lang->consensus_submit}" />
+				                            <input type="submit" name="submit" class="button" value="{$lang->consensus_submit}" {$read_mode} />
 				                        </td>
                                     </tr>
 			                    </tbody>
 			                </table>
 			                {$lang->consensus_resistance_points_scala}
-			            </form>',
+			            </form>{$close_consensus}',
+                'close_form_consensus' => '<form method="post" action="misc.php">
+                            <input type="hidden" name="action" value="consensus_close" />
+                            <input type="hidden" name="consensus_post_code" value="{$mybb->post_code}" />
+                            <input type="hidden" name="consensus_id" value="{$consensus->getConsensusId()}">
+                            <input type="hidden" name="thread_id" value="{$consensus->getThreadId()}" />
+                            <input type="submit" class="button" value="{$lang->consensus_close_caption}">
+                        </form>',
                 'display_form_proposal' =>
-                        '
-                        <tr>
+                        '<tr>
 				            <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
 					            <strong>{$lang->consensus_question} {$proposal->getPosition()} - {$proposal->getTitle()}</strong>
 				            </td>
@@ -57,6 +68,7 @@ class ConsensusTemplates
 				        <tr>
 				            <td class="trow1" style="text-align: justify;" colspan="2">
 					            {$proposal->getDescription()}
+					            <input type="hidden" name="proposal_{$proposal->getPosition()}" value="{$proposal->getId()}">
 				            </td>
 			            </tr>
 			            <tr>
@@ -66,7 +78,7 @@ class ConsensusTemplates
 				            </td>
 			            </tr>',
                 'display_form_proposal_points' =>
-                '<input type="radio" class="radio" name="{$proposal->getId()}" id="{$proposal->getId()}_{$resistance_points}" value="{$resistance_points}" /><label for="{$proposal->getId()}_{$resistance_points}">{$resistance_points_label}</label>',
+                '<input {$checked} {$disabled} type="radio" class="radio" name="proposal_points_{$proposal->getPosition()}" id="{$proposal->getPosition()}_{$resistance_points}" value="{$resistance_points}" /><label for="{$proposal->getPosition()}_{$resistance_points}">{$resistance_points_label}</label>',
                 'create_form' => '
                     <script language="JavaScript">
                         function addPoints() {
@@ -95,6 +107,13 @@ class ConsensusTemplates
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td class="trow1" style="text-align: justify; padding-right: 1em;" colspan="2">
+                                        <label for="number_points">{$lang->consensus_proposal_caption_add}:</label><br />
+                                        <input type="number" id="number_points" value="{$proposals}" min="1" max="10" />
+                                        <input type="button" onclick="addPoints()" value="{$lang->consensus_proposal_add}" /> {$lang->consensus_proposal_add_notice}
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="trow1" style="text-align: left; vertical-align: top; padding-right: 1em;" colspan="2">
                                         <label for="consensus_title">{$lang->consensus_title}:</label><br />
                                         <input id="consensus_title" name="consensus_title" type="text" maxlength="255" style="width: 100%;" />
@@ -104,13 +123,6 @@ class ConsensusTemplates
                                     <td class="trow1" style="text-align: justify; padding-right: 1em;" colspan="2">
                                         <label for="consensus_description">{$lang->consensus_description}:</label><br />
                                         <textarea style="width: 100%; height: 5em;"  id="consensus_description" name="consensus_description"></textarea>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="trow1" style="text-align: justify; padding-right: 1em;" colspan="2">
-                                        <label for="number_points">{$lang->consensus_proposal_caption_add}:</label><br />
-                                        <input type="number" id="number_points" value="{$proposals}" min="1" max="10" />
-                                        <input type="button" onclick="addPoints()" value="{$lang->consensus_proposal_add}" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -148,7 +160,73 @@ class ConsensusTemplates
                             </td>
                         </tr>
                     </table>',
-                'post' => '<br /><br /><strong>{$lang->consensus_submit_done}</strong>'
+                'display_consensus' => '
+                    <table border="0" cellspacing="0" cellpadding="5" class="tborder" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <td class="thead" colspan="2">
+                                    <strong>{$lang->consensus_proposal_results_caption_title}: {$consensus->getTitle()} {$consensus_closed}</strong>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
+                                    {$consensus->getDescription()}
+                                </td>
+                            </tr>
+                            {$results}
+                        </tbody>
+                    </table>',
+                'display_results' => '
+                        <tr>
+				            <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
+					            <strong>{$lang->consensus_question} {$proposal->getPosition()} - {$proposal->getTitle()}</strong>
+				            </td>
+				        </tr>
+				        <tr>
+				            <td class="trow1" style="text-align: justify;" colspan="2">
+					            {$proposal->getDescription()}
+				            </td>
+			            </tr>
+			            <tr>
+				            <td class="trow1" style="text-align: left;" colspan="2">
+					            <strong style="margin-right: 2em;">{$lang->consensus_results_proposal_results} {$proposal->getPosition()}</strong>
+					            <table style="text-align: left; width: 100%;">
+					                {$proposal_results}
+                                </table>
+				            </td>
+			            </tr>
+			            <tr>
+			                <td colspan="2"><hr /></td>
+                        </tr>',
+                'display_results_proposal_results' => '
+						<tr>
+							<td>
+								<div style="width: 50em; height: 1em; display: inline-block; background-image: linear-gradient(to right, darkred, yellow, darkgreen);">
+									<div style="width: {$proposal_progress_size}em; height: 1em; background-color: white; opacity: 80%; float: right;">&nbsp;</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="text-align: left;">
+                                {$proposal_summary_results}
+							</td>
+						</tr>',
+                'display_results_summary' => '
+                    <table>
+                    <tr>
+                        <td><strong>{$lang->consensus_proposal_results_caption_total}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{$summary_total_points} $lang->consensus_proposal_results_caption_points ({$summary_total_votes} {$lang->consensus_proposal_results_caption_votes}, {$summary_no_votes} {$lang->consensus_proposal_results_caption_no_opinion})</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{$lang->consensus_proposal_results_caption_conclusion}: {$summary_total_acceptance_percent_rounded}% {$lang->consensus_proposal_results_caption_approval}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{$lang->consensus_proposal_results_caption_formula}: 100 - (({$summary_total_points} / {$summary_total_votes}) * 10) =  {$summary_total_acceptance_percent}%</td>
+                    </tr>'
         );
 
         $prefix = $this->group['prefix'];

@@ -3,6 +3,7 @@
 
 class Consensus
 {
+    private $consensus_id;
     private $title;
     private $description;
     private $expires;
@@ -11,7 +12,7 @@ class Consensus
     private $status_id;
     private $proposals;
 
-    public function __construct($title, $description, DateTime $expires, $user_id, $thread_id, $status_id, $proposals) {
+    public function __construct($title, $description, DateTime $expires, $user_id, $thread_id, $status_id, $proposals, $consensus_id = 0) {
         $this->title = $title;
         $this->description = $description;
         $this->expires = $expires;
@@ -19,10 +20,19 @@ class Consensus
         $this->thread_id = $thread_id;
         $this->status_id = $status_id;
         $this->proposals = $proposals;
+        $this->consensus_id = $consensus_id;
     }
 
     public function add_proposal(Proposal $proposal) {
         $this->proposals[] = $proposal;
+    }
+
+    /**
+     * @return int|mixed
+     */
+    public function getConsensusId()
+    {
+        return $this->consensus_id;
     }
 
     /**

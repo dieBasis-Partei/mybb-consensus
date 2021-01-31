@@ -60,7 +60,6 @@
     {
         $plugins->run_hooks("consensus_create_start");
 
-
         $thread = get_thread($mybb->input['tid']);
         if (!$thread || ($thread['visible'] != 1 && ($thread['visible'] == 0 && !is_moderator($thread['fid'], "canviewunapprove")) || ($thread['visible'] == -1 && !is_moderator($thread['fid'], "canviewdeleted")))) {
             error($lang->error_invalidthread);
