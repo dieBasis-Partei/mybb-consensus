@@ -1,4 +1,6 @@
 out/
 docker/mybb
 docker/postgres
+docker/mybb-mysql
+docker/mysql
 .DS_Store

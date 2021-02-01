@@ -42,7 +42,6 @@ class ConsensusDbTables {
         if ($this->check_tables_exists(true)) {
             return;
         }
-        echo "type: ".$this->databaseType;
 
         switch ($this->databaseType) {
             case "pgsql":
@@ -53,8 +52,8 @@ class ConsensusDbTables {
                 $this->create_sqlite_tables();
                 break;
             default:
-                // TODO: Implement default sql tables
-                $this->create_sql_tables($this->db->build_create_table_collation());
+                $collation = $this->db->build_create_table_collation();
+                $this->create_sql_tables($collation);
                 break;
         }
 
@@ -129,7 +128,36 @@ class ConsensusDbTables {
 
     private function create_sql_tables($collation)
     {
-        // TODO: Implement me.
+        // Create consensus_status table
+        $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->status." (
+            status_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            status varchar(40) NOT NULL) ENGINE=MyISAM{$collation} AUTO_INCREMENT=1;");
+
+        // Create consensus table
+        $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->consensus." (
+            consensus_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            title varchar(255) NOT NULL,
+            description text,
+            expires timestamp NOT NULL,
+            created timestamp NOT NULL default CURRENT_TIMESTAMP,
+            creator int NOT NULL,
+            thread_id int NOT NULL,
+            status int unsigned) ENGINE=MyISAM{$collation} AUTO_INCREMENT=1;");
+
+        // Create proposal table
+        $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->proposals." (
+            proposal_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            title varchar(255) NOT NULL,
+            description text,
+            position int unsigned,
+            consensus_id int unsigned) ENGINE=MyISAM{$collation} AUTO_INCREMENT=1;");
+
+        // Create votes table
+        $this->db->write_query("CREATE TABLE ".TABLE_PREFIX.$this->votes." (
+            vote_id int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            proposal_id int unsigned,
+            user_id int unsigned,
+            points tinyint unsigned) ENGINE=MyISAM{$collation} AUTO_INCREMENT=1;");
     }
 
     private function insert_default_data()
