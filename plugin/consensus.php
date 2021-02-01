@@ -202,7 +202,7 @@ function calculate_results($votes) {
     $num_of_votes = 0;
     $invalid_votes = 0;
     foreach ($votes as $vote) {
-        if ($points >= 11) {
+        if ($vote->getPoints() >= 11) {
             $invalid_votes += 1;
         } else {
             $points += $vote->getPoints();
