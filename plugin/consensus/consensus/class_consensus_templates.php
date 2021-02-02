@@ -226,7 +226,8 @@ class ConsensusTemplates
                     </tr>
                     <tr>
                         <td>{$lang->consensus_proposal_results_caption_formula}: 100 - (({$summary_total_points} / {$summary_total_votes}) * 10) =  {$summary_total_acceptance_percent}%</td>
-                    </tr>'
+                    </tr>
+                    </table>'
         );
 
         $prefix = $this->group['prefix'];
