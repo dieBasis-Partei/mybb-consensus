@@ -65,7 +65,7 @@ function consensus_info()
             "website"		=> "https://github.com/dieBasis-Partei/mybb-consensus",
             "author"		=> "dieBasis",
             "authorsite"	=> "https://www.diebasis-partei.de",
-            "version"		=> "0.1-SNAPSHOT-2021.02.02",
+            "version"		=> "0.1",
             "guid" 			=> time(),
             "codename"		=> $codename,
             "compatibility" => "*" // TODO
