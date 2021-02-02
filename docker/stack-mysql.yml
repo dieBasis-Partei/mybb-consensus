@@ -1,0 +1,29 @@
+services:
+  mybb:
+    image: mybb/mybb:latest
+    depends_on:
+      - mysql
+      - nginx
+    volumes:
+      - ${PWD}/mybb-mysql:/var/www/html:rw
+  nginx:
+    image: webdevops/php-nginx:7.4-alpine
+    ports:
+      - published: 81
+        target: 80
+    volumes:
+      - ${PWD}/mybb-mysql:/app:rw
+  mysql:
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: mybb
+      MYSQL_USER: mybb
+      MYSQL_PASSWORD: changeme
+    image: mysql:8.0
+    ports:
+      - published: 3306
+        target: 3306
+    volumes:
+      - ${PWD}/mysql:/var/lib/mysql:rw
+
+version: '3.6'

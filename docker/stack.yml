@@ -1,0 +1,24 @@
+services:
+  mybb:
+    image: mybb/mybb:latest
+    volumes:
+      - ${PWD}/mybb:/var/www/html:rw
+  nginx:
+    image: webdevops/php-nginx:7.4-alpine
+    ports:
+      - published: 80
+        target: 80
+    volumes:
+      - ${PWD}/mybb:/app:rw
+  postgresql:
+    environment:
+      POSTGRES_DB: mybb
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_USER: mybb
+    image: postgres:13.1
+    ports:
+      - published: 5432
+        target: 5432
+    volumes:
+      - ${PWD}/postgres:/var/lib/postgresql/data:rw
+version: '3.6'
