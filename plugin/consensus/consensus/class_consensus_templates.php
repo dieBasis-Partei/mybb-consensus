@@ -45,7 +45,7 @@ class ConsensusTemplates
 			                        {$proposals}
                                     <tr>
 				                        <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
-				                            <input type="submit" name="submit" class="button" value="{$lang->consensus_submit}" {$read_mode} />
+				                            <input type="submit" name="submit" class="button" value="{$lang->consensus_submit}" {$read_mode} /> {$notice_already_voted}
 				                        </td>
                                     </tr>
 			                    </tbody>

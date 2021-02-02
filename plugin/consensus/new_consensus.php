@@ -8,6 +8,9 @@
 
     require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_consensus.php');
     require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_proposal.php');
+    require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_status.php');
+    require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_status_dao.php');
+    require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_consensus_dao.php');
 
     // Only required because we're using misc_help for our page wrapper
     $lang->load("consensus");
@@ -39,15 +42,13 @@
         $thread_id = $mybb->get_input('tid');
         $user_id = $mybb->user['uid'];
 
-        require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_status.php');
-        require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_status_dao.php');
         $statusDao = new StatusDao($db);
         $status = $statusDao->find_status_by_name(Status::STATUS_ACTIVE);
 
         $status_id = $status->getId();
 
         $consensus = new Consensus($consensus_title, $consensus_description, $consensus_expires, $user_id, $thread_id, $status_id, $sugs);
-        require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_consensus_dao.php');
+
 
         $dao = new ConsensusDao($db);
         if ($dao->insert($consensus) === true) {

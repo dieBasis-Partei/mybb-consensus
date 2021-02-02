@@ -65,7 +65,7 @@ function consensus_info()
             "website"		=> "https://github.com/dieBasis-Partei/mybb-consensus",
             "author"		=> "dieBasis",
             "authorsite"	=> "https://www.diebasis-partei.de",
-            "version"		=> "0.1-SNAPSHOT-".date("d.m.Y-H:i:s", time()),
+            "version"		=> "0.1-SNAPSHOT-2021.02.02",
             "guid" 			=> time(),
             "codename"		=> $codename,
             "compatibility" => "*" // TODO
@@ -176,14 +176,19 @@ function display_results($consensus) {
             $summary_total_points = $vote_data['points'];
             $summary_total_votes = $vote_data['total_votes'];
             $summary_no_votes = $vote_data['invalid_votes'];
-            $summary_total_acceptance_percent = (100 - (($summary_total_points / $summary_total_votes) * 10));
-            $summary_total_acceptance_percent_rounded = round($summary_total_acceptance_percent, 2);
+
+            if ($summary_total_votes == 0) {
+                $summary_total_acceptance_percent = '-/-';
+                $summary_total_acceptance_percent_rounded = '-/-';
+                $summary_total_votes = '-/-';
+                $proposal_progress_size = 50;
+            } else {
+                $summary_total_acceptance_percent = (100 - (($summary_total_points / $summary_total_votes) * 10));
+                $summary_total_acceptance_percent_rounded = round($summary_total_acceptance_percent, 2);
+                $proposal_progress_size = 50 - ($summary_total_acceptance_percent * 0.5);
+            }
             $proposal_summary_results = eval($templates->render('consensus_display_results_summary'));
-
-
-            $proposal_progress_size = 50 - ($summary_total_acceptance_percent * 0.5);
             $proposal_results = eval($templates->render('consensus_display_results_proposal_results'));
-
 
             $results .= eval($templates->render('consensus_display_results'));
 

@@ -24,15 +24,15 @@ $l['consensus_choice_not_valid'] = 'Fehler! Der angegebene Text f&uuml;r einen V
 $l['consensus_title_not_valid'] = 'Fehler! Der angegebene Titel ist leer oder l&auml;nger als 255 Zeichen.';
 $l['consensus_error_consensus_creation'] = 'Fehler! Konsensierung kann nicht erstellt werden. Wenn dies noch einmal passiert, kontaktiere einen Board-Administrator.';
 
-$l['consensus_title'] = 'Titel';
+$l['consensus_title'] = 'Fragestellung';
 $l['consensus_description'] = 'Beschreibung';
-$l['consensus_expires'] = 'Endet am';
+$l['consensus_expires'] = 'Enddatum ausw&auml;hlen';
 $l['consensus_start'] = 'Konsensierung starten';
 $l['consensus_close_caption'] = 'Konsensierung schlie&szlig;en';
 $l['consensus_closed_successfully'] = 'Konsensierung erfolgreich geschlossen. Es k&ouml;nnen keine weiteren Widerstandspunkte abgegeben werden.';
 $l['consensus_status_closed_note'] = 'Konsensierung wurde vorzeitig beendet';
 
-$l['consensus_proposal_title'] = 'Titel';
+$l['consensus_proposal_title'] = 'Vorschlag';
 $l['consensus_proposal_description'] = 'Beschreibung';
 $l['consensus_proposal_add'] = 'Vorschlag hinzuf&uuml;gen';
 $l['consensus_proposal_add_notice'] = 'Hinweis: Jegliche Eingabe wird beim klicken auf  \''.$l['consensus_proposal_add'].'\' gel&ouml;scht.';
@@ -58,3 +58,5 @@ $l['consensus_proposal_results_caption_approval'] = 'Zustimmung';
 $l['consensus_proposal_results_caption_title'] = 'Ergebnisse';
 $l['consensus_results_proposal_results'] = 'Ergebnis Vorschlag';
 $l['consensus_proposal_results_caption_formula'] = 'Formel';
+
+$l['consensus_display_form_notice_already_voted'] = 'Du hast bereits abgestimmt.';

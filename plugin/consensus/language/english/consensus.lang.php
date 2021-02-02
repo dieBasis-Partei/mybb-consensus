@@ -26,7 +26,7 @@ $l['consensus_error_consensus_creation'] = 'Error! Could not create consensus po
 
 $l['consensus_title'] = 'Title';
 $l['consensus_description'] = 'Description';
-$l['consensus_expires'] = 'Expires at';
+$l['consensus_expires'] = 'Choose expiry date';
 $l['consensus_start'] = 'Start consensus';
 $l['consensus_close_caption'] = 'Close consensus';
 $l['consensus_closed_successfully'] = 'Consensus successfully closed. No more votes possible.';
@@ -58,3 +58,5 @@ $l['consensus_proposal_results_caption_approval'] = 'approval';
 $l['consensus_proposal_results_caption_title'] = 'Results';
 $l['consensus_results_proposal_results'] = 'Result proposal';
 $l['consensus_proposal_results_caption_formula'] = 'Formula';
+
+$l['consensus_display_form_notice_already_voted'] = 'You have already voted.';
