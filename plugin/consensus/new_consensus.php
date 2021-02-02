@@ -11,6 +11,7 @@
     require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_status.php');
     require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_status_dao.php');
     require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_consensus_dao.php');
+    require_once(MYBB_ROOT . 'inc/plugins/consensus/controller/UserController.php');
 
     // Only required because we're using misc_help for our page wrapper
     $lang->load("consensus");
@@ -22,7 +23,7 @@
     if ($action == 'create') {
         verify_post_check($post_code);
 
-        if ($mybb->request_method != 'post') {
+        if ($mybb->request_method != 'post' || UserController::is_mod($mybb->user) == false) {
             error_no_permission();
         }
 
@@ -61,12 +62,14 @@
     {
         $plugins->run_hooks("consensus_create_start");
 
+        if (UserController::is_mod($mybb->user) == false) {
+            error_no_permission();
+        }
+
         $thread = get_thread($mybb->input['tid']);
         if (!$thread || ($thread['visible'] != 1 && ($thread['visible'] == 0 && !is_moderator($thread['fid'], "canviewunapprove")) || ($thread['visible'] == -1 && !is_moderator($thread['fid'], "canviewdeleted")))) {
             error($lang->error_invalidthread);
         }
-        // TODO: Check permissions.
-
 
         /**
          * @param $thread
