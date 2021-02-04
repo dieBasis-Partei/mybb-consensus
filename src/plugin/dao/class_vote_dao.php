@@ -1,5 +1,5 @@
 <?php
-require_once(MYBB_ROOT.'inc/plugins/consensus/models/class_vote.php');
+require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_vote.php');
 
 class VoteDao
 {

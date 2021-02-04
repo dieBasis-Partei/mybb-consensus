@@ -79,20 +79,11 @@ class ConsensusTemplates
 			            </tr>',
                 'display_form_proposal_points' =>
                 '<input {$checked} {$disabled} type="radio" class="radio" name="proposal_points_{$proposal->getPosition()}" id="{$proposal->getPosition()}_{$resistance_points}" value="{$resistance_points}" /><label for="{$proposal->getPosition()}_{$resistance_points}">{$resistance_points_label}</label>',
-                'create_form' => '
-                    <script language="JavaScript">
-                        function addPoints() {
-                            let number_of_proposals = document.getElementById("number_points").value;
-                            
-                            if (number_of_proposals < 1) {
-                                number_of_proposals = 1;
-                            }
-                            let url = new URL(document.URL);
-                            url.searchParams.set(\'proposals\', number_of_proposals);
+                'create_form' => ', number_of_proposals);
                             document.location.href =  url.toString();
                         }
                     </script>
-                    <form method="POST" action="new_consensus.php">
+                    <form method="POST" action="../../new_consensus.php">
                         <input type="hidden" name="consensus_post_code" value="{$mybb->post_code}" />
 					    <input type="hidden" name="action" value="create" />
 					    <input type="hidden" name="proposals" value="{$proposals}">

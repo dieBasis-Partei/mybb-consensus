@@ -1,5 +1,7 @@
 <?php
 
+namespace MyBBConsensus\Controller;
+
 class UserController
 {
     public static function is_mod($user) {
