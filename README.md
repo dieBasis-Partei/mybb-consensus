@@ -4,7 +4,7 @@ Author: dieBasis - Basisdemokratische Partei Deutschland
 
 Url: https://www.diebasis-partei.de
 
-Version 0.1.1
+Version 0.2-SNAPSHOT
 
 License: MIT
 
