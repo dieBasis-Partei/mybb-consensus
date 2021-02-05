@@ -60,3 +60,8 @@ $l['consensus_results_proposal_results'] = 'Result proposal';
 $l['consensus_proposal_results_caption_formula'] = 'Formula';
 
 $l['consensus_display_form_notice_already_voted'] = 'You have already voted.';
+$l['consensus_form_tutorial_info'] = 'Information';
+$l['consensus_form_tutorial_title'] = 'What is a consensus poll?';
+$l['consensus_form_tutorial'] = nl2br('In an consensus poll you are able to show your personal resistance for a proposal.
+You can select 0 resistance points to show no resistance - you fully admit. If you choose 5 points, you have reservations against a proposal, 10 points you disagree completely.
+If you have no own opinion, choose this option and your vote does not count to the result.');

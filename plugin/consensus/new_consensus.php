@@ -50,7 +50,6 @@
 
         $consensus = new Consensus($consensus_title, $consensus_description, $consensus_expires, $user_id, $thread_id, $status_id, $sugs);
 
-
         $dao = new ConsensusDao($db);
         if ($dao->insert($consensus) === true) {
             redirect("showthread.php?tid={$thread_id}", $lang->consensus_created);
@@ -106,7 +105,3 @@
         // Spit out the page to the user once we've put all the templates and vars together
         output_page($page);
     }
-
-
-?>
-
