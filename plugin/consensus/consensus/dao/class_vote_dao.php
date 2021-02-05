@@ -1,16 +1,19 @@
 <?php
 require_once(MYBB_ROOT.'inc/plugins/consensus/models/class_vote.php');
+require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_base_dao.php');
 
-class VoteDao
+class VoteDao extends DaoBase
 {
-    private $db;
+    private DB_Base $db;
 
     public function __construct(DB_Base $db) {
+        parent::__construct($db);
         $this->db = $db;
     }
 
     public function insert(Vote $vote) {
-        return $this->db->insert_query('consensus_votes', $vote->toDBArray()) > 0;
+        $escaped_vote = $this->escape_input($vote->toDBArray());
+        return $this->db->insert_query('consensus_votes', $escaped_vote) > 0;
     }
 
     public function find_vote($user_id, $proposal_id) {
@@ -28,6 +31,7 @@ class VoteDao
     }
 
     public function find_votes_by_proposal_id($proposal_id) {
+        $proposal_id = $this->db->escape_string($proposal_id);
         $query = $this->db->simple_select('consensus_votes', '*', "proposal_id='{$proposal_id}'");
 
         $votes = array();

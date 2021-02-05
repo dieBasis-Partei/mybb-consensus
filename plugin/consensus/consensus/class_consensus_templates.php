@@ -42,15 +42,23 @@ class ConsensusTemplates
 				                            {$consensus->getDescription()}
 				                        </td>
                                     </tr>
+                                    <tr>
+                                        <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
+                                            <img src="images/icons/information.png" alt="{$lang->consensus_form_tutorial_info}" /> <strong>{$lang->consensus_form_tutorial_title}</strong><br />
+                                            {$lang->consensus_form_tutorial}
+                                        </td>
+                                    </tr>
 			                        {$proposals}
                                     <tr>
-				                        <td class="trow1" style="text-align: left; vertical-align: top;" colspan="2">
+				                        <td class="trow1" style="text-align: left; vertical-align: top;">
 				                            <input type="submit" name="submit" class="button" value="{$lang->consensus_submit}" {$read_mode} /> {$notice_already_voted}
 				                        </td>
+				                        <td class="trow1">
+				                            {$lang->consensus_resistance_points_scala}
+                                        </td>
                                     </tr>
 			                    </tbody>
 			                </table>
-			                {$lang->consensus_resistance_points_scala}
 			            </form>{$close_consensus}',
                 'close_form_consensus' => '<form method="post" action="misc.php">
                             <input type="hidden" name="action" value="consensus_close" />
