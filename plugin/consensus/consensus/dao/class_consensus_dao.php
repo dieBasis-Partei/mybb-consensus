@@ -1,22 +1,27 @@
 <?php
 require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_proposal.php');
 require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_consensus.php');
+require_once(MYBB_ROOT . 'inc/plugins/consensus/dao/class_base_dao.php');
 
-class ConsensusDao
-{
-    private $db;
+class ConsensusDao extends DaoBase {
+
+    private DB_Base $db;
 
     public function __construct(DB_Base $db) {
+        parent::__construct($db);
         $this->db = $db;
     }
 
     public function insert(Consensus $consensus) {
-        $consensus_id = $this->db->insert_query('consensus', $consensus->toDBArray());
+        $consensus_array = $this->escape_input($consensus->toDBArray());
+
+        $consensus_id = $this->db->insert_query('consensus', $consensus_array);
         if ($consensus_id > 0) {
             $proposals = $consensus->getProposals();
             foreach ($proposals as $proposal) {
+                $escaped_proposal = $this->escape_input($proposal->toDBArray());
                 $proposal->setConsensusId($consensus_id);
-                $this->db->insert_query('consensus_proposals', $proposal->toDBArray());
+                $this->db->insert_query('consensus_proposals', $escaped_proposal);
             }
             return true;
         }
@@ -53,6 +58,8 @@ class ConsensusDao
     }
 
     public function update_status($consensus_id, $status_id) {
+        $consensus_id = $this->db->escape_string($consensus_id);
+        $status_id = $this->db->escape_string($status_id);
         $this->db->update_query('consensus', ["status" => $status_id], "consensus_id='{$consensus_id}'");
     }
 

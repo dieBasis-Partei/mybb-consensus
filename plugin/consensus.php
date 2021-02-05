@@ -65,7 +65,7 @@ function consensus_info()
             "website"		=> "https://github.com/dieBasis-Partei/mybb-consensus",
             "author"		=> "dieBasis",
             "authorsite"	=> "https://www.diebasis-partei.de",
-            "version"		=> "0.2-SNAPSHOT",
+            "version"		=> "0.1.1-SNAPSHOT",
             "guid" 			=> time(),
             "codename"		=> $codename,
             "compatibility" => "*" // TODO
@@ -332,6 +332,7 @@ function find_icon_by_name($icon_name) {
 
 function find_status_id($status) {
     global $db;
+    $status = $db->escape_string($status);
 
     $query = $db->simple_select('consensus_status', 'status_id', 'status=\''.$status.'\'');
     return $db->fetch_field($query, 'status_id');

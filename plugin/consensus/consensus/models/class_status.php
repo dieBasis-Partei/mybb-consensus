@@ -11,9 +11,9 @@ class Status
     private $id;
     private $status;
 
-    public function __construct($id, $status) {
+    public function __construct($status, $id = null) {
         $this->status = $status;
-        $this->id = $id | null;
+        $this->id = $id;
     }
 
     /**

@@ -60,3 +60,8 @@ $l['consensus_results_proposal_results'] = 'Ergebnis Vorschlag';
 $l['consensus_proposal_results_caption_formula'] = 'Formel';
 
 $l['consensus_display_form_notice_already_voted'] = 'Du hast bereits abgestimmt.';
+$l['consensus_form_tutorial_info'] = 'Information';
+$l['$consensus_form_tutorial_title'] = 'Was ist eine Konsensierung?';
+$l['consensus_form_tutorial'] = nl2br('Bei einer Konsensierung gibst Du Deinen pers&ouml;nlichen Widerstand zu den jeweiligen Vorschlag ab.
+Dabei sind 0 Punkte kein Widerstand - also volle Zustimmung, bei 5 Punkten zweigstDu Bedenken gegen den Vorschlag und bei 10 Punkten bist Du komplett dagegen.
+Solltest Du keine Meinung zu den Vorschlag haben, kannst Du auch diese Option w&auml;hlen, dann flie&szlig;t Deine Stimme nicht in das Ergebnis mit ein.');
