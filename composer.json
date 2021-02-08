@@ -1,24 +1,32 @@
 {
-  "name": "MyBB-consensus",
+  "name": "mybb/consensus",
   "description": "A plugin for creating consensus polls in MyBB",
-  "minimum-stability": "stable",
+  "minimum-stability": "beta",
   "license": "MIT",
+  "version": "0.2.0",
+  "readme": "README.md",
   "authors": [
     {
       "name": "dieBasis",
-      "email": "it@diebasis-partei.de"
+      "email": "it@diebasis-partei.de",
+      "homepage": "https://diebasis-partei.de"
     }
   ],
-  "include-path": ["src/resources"],
   "autoload": {
     "classmap": [
       "src/"
     ],
     "psr-4": {
-      "/\\": "src/MyBBConsensus",
-      "/inc\\languages": "src/Languages",
-      "/inc\\plugins": "src/plugin"
+      "mybb\\consensus\\": "src/inc/plugins/consensus"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "mybb\\consensus\\": "tests/inc/plugins/consensus"
+    }
+  },
+  "require": {
+    "php": ">=7.2"
   },
   "require-dev": {
     "phpunit/phpunit": "^9"
