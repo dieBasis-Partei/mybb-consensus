@@ -1,7 +1,8 @@
 <?php
 
+namespace mybb\consensus\models;
 
-class Proposal
+class Proposal implements DBModel
 {
     private $id;
     private $title;
@@ -9,7 +10,7 @@ class Proposal
     private $consensus_id;
     private $position;
 
-    public function __construct($title, $description, $position, $consensus_id, $id = 0) {
+    public function __construct(string $title, string $description, int $position, int $consensus_id, int $id = 0) {
         $this->id = $id;
         $this->description = $description;
         $this->title = $title;
@@ -18,33 +19,33 @@ class Proposal
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getPosition()
+    public function getPosition(): int
     {
         return $this->position;
     }
@@ -52,7 +53,7 @@ class Proposal
     /**
      * @return int
      */
-    public function getConsensusId()
+    public function getConsensusId(): int
     {
         return $this->consensus_id;
     }
@@ -60,18 +61,19 @@ class Proposal
     /**
      * @param int $consensus_id
      */
-    public function setConsensusId($consensus_id)
+    public function setConsensusId(int $consensus_id)
     {
         $this->consensus_id = $consensus_id;
     }
 
 
-    public function toDBArray() {
+    public function toDBArray(): array
+    {
         return array(
-            "title" => $this->title,
-            "description" => $this->description,
-            "position" => $this->position,
-            "consensus_id" => $this->consensus_id
+            "title" => $this->getTitle(),
+            "description" => $this->getDescription(),
+            "position" => $this->getPosition(),
+            "consensus_id" => $this->getConsensusId()
         );
     }
 

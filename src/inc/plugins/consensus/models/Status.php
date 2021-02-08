@@ -1,5 +1,5 @@
 <?php
-
+namespace mybb\consensus\models;
 
 class Status
 {
@@ -11,15 +11,15 @@ class Status
     private $id;
     private $status;
 
-    public function __construct($id, $status) {
+    public function __construct(string $status, int $id = 0) {
         $this->status = $status;
-        $this->id = $id | null;
+        $this->id = $id;
     }
 
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -27,12 +27,9 @@ class Status
     /**
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
-
-
-
 
 }

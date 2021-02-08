@@ -1,6 +1,7 @@
 <?php
-require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_proposal.php');
-require_once(MYBB_ROOT . 'inc/plugins/consensus/models/class_consensus.php');
+namespace mybb\consensus\dao;
+
+use mybb\consensus\models\Consensus;
 
 class ConsensusDao
 {
