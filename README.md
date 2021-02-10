@@ -1,5 +1,8 @@
 # MyBB - Consensus Plugin
 
+**NOTICE:** This Project is moved to gitlab: https://gitlab.com/diebasis-partei/mybb-consensus
+
+
 Author: dieBasis - Basisdemokratische Partei Deutschland
 
 Url: https://www.diebasis-partei.de
